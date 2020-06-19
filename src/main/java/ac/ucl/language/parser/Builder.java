@@ -1,4 +1,4 @@
-package ac.ucl.parser;
+package ac.ucl.language.parser;
 
 import javascript.JavaScriptLexer;
 import javascript.JavaScriptParser;

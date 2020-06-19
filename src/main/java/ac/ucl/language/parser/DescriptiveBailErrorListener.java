@@ -1,4 +1,4 @@
-package ac.ucl.parser;
+package ac.ucl.language.parser;
 
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;

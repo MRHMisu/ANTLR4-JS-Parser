@@ -5,7 +5,7 @@
  * Copyright (c) 2017-2020 by Ivan Kochurkin (Positive Technologies):
     added ECMAScript 6 support, cleared and transformed to the universal grammar.
  * Copyright (c) 2018 by Juan Alvarez (contributor -> ported to Go)
- * Copyright (c) 2019 by Student ac.ucl.Main (contributor -> ES2020)
+ * Copyright (c) 2019 by Student ac.ucl.language.parser.Main (contributor -> ES2020)
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
