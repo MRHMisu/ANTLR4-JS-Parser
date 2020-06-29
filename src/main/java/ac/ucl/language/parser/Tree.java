@@ -1,32 +1,26 @@
 package ac.ucl.language.parser;
 
-import org.antlr.v4.runtime.Token;
+import ac.ucl.language.model.Parameter;
+import javascript.JavaScriptParser;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class Tree {
-    private String FILE_PATH;
-    private String MODE;
-    private static final String WHITESPACE = " ";
-    private static final String NEWLINE = "\n";
-    private static final String TAB = "\t";
 
     public static String getText(ParseTree tree) {
-        StringBuilder builder = new StringBuilder();
-
         List<TerminalNodeImpl> terminalNodes = walk(tree);
         String code = getText(terminalNodes);
         return code;
     }
 
-
     public static String getText(List<TerminalNodeImpl> terminalNodes) {
         StringBuilder builder = new StringBuilder();
         for (TerminalNodeImpl tm : terminalNodes) {
-            Token token = tm.getSymbol();
             builder.append(tm.getText() + " ");
         }
         return builder.toString();
@@ -36,8 +30,11 @@ public final class Tree {
         List<TerminalNodeImpl> terminalNodes = new ArrayList<>();
         List<ParseTree> firstStack = new ArrayList<ParseTree>();
         firstStack.add(tree);
+
         List<List<ParseTree>> childListStack = new ArrayList<List<ParseTree>>();
         childListStack.add(firstStack);
+        String functionName = getFunctionIdentifier(tree);
+        String className = getClassName(tree);
         while (!childListStack.isEmpty()) {
             List<ParseTree> childStack = childListStack.get(childListStack.size() - 1);
             if (childStack.isEmpty()) {
@@ -47,6 +44,7 @@ public final class Tree {
                 if (tree instanceof TerminalNodeImpl) {
                     terminalNodes.add((TerminalNodeImpl) tree);
                 }
+
                 if (tree.getChildCount() > 0) {
                     List<ParseTree> children = new ArrayList<ParseTree>();
                     for (int i = 0; i < tree.getChildCount(); i++) {
@@ -57,5 +55,65 @@ public final class Tree {
             }
         }
         return terminalNodes;
+    }
+
+
+    private List<Parameter> getParameters(JavaScriptParser.FormalParameterListContext parameters) {
+        List<Parameter> params = new ArrayList<>();
+        // process parameters
+        return params;
+    }
+
+    private static String getClassName(ParseTree tree) {
+        String className = "";
+        if (tree instanceof JavaScriptParser.MethodDefinitionContext) {
+            ParseTree parentClassContext = tree.getParent();
+            while (!(parentClassContext instanceof JavaScriptParser.ClassDeclarationContext)) {
+                parentClassContext = parentClassContext.getParent();
+            }
+            ParseTree identifier = parentClassContext.getChild(1);
+            className = identifier.getText();
+        }
+        return className;
+    }
+
+    private static String getFunctionIdentifier(ParseTree tree) {
+        String functionName = "";
+        if (tree instanceof JavaScriptParser.FunctionDeclarationContext) {
+            if (tree.getChildCount() > 0) {
+                for (int i = 0; i < tree.getChildCount(); i++) {
+                    ParseTree child = tree.getChild(i);
+                    if (child instanceof JavaScriptParser.IdentifierContext) {
+                        functionName = child.getText();
+                        break;
+                    }
+                }
+            }
+        } else if (tree instanceof JavaScriptParser.FunctionExpressionContext) {
+            functionName = "Function Expression";
+        } else if (tree instanceof JavaScriptParser.ArrowFunctionContext) {
+            functionName = "Arrow Function";
+        } else if (tree instanceof JavaScriptParser.AnoymousFunctionContext) {
+            functionName = "Anonymous Function";
+        } else if (tree instanceof JavaScriptParser.MethodDefinitionContext) {
+            while (!(tree instanceof JavaScriptParser.IdentifierContext)) {
+                if (tree.getChildCount() > 0)
+                    tree = tree.getChild(0);
+            }
+            functionName = tree.getText();
+        }
+        return functionName;
+    }
+
+    private String getHeaders() {
+
+        // process function headers
+        return "";
+    }
+
+    private Map<String, Integer> getStartEnd() {
+        Map<String, Integer> startEnd = new HashMap<>();
+        return startEnd;
+
     }
 }

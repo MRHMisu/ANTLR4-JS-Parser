@@ -3,8 +3,6 @@ package ac.ucl.language.parser;
 import ac.ucl.util.SourceFileProcessor;
 import javascript.JavaScriptParser;
 import javascript.JavaScriptParserBaseListener;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.File;
@@ -16,56 +14,56 @@ public class Main {
         String script = SourceFileProcessor.getSourceCodeFromSourcePath(path);
         JavaScriptParser parser = new Builder.Parser(script).build();
 
-        ParseTreeWalker.DEFAULT.walk(new JavaScriptParserBaseListener() {
-            //ctx.identifier().getText()-> function name
+        // create file method
+        // Method(FILE_PATH, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
+        //       StringUtils.EMPTY, src, startLine, endLine, params, StringUtils.EMPTY);
 
-            // function declaration (statement start with the keyword function)
+
+        //Method(FILE_PATH, StringUtils.EMPTY, className, functionName,
+        //       StringUtils.EMPTY, src, startLine, endLine, params, header.toString());
+
+        ParseTreeWalker.DEFAULT.walk(new JavaScriptParserBaseListener() {
             @Override
             public void enterFunctionDeclaration(JavaScriptParser.FunctionDeclarationContext ctx) {
-                if (ctx.identifier() != null) {
-                    //System.out.println("enterFunctionDeclaration: " + ctx.getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-                    String code = Tree.getText(ctx);
-                    System.out.println(code);
-                }
+                String code = Tree.getText(ctx);
+                System.out.println("enterFunctionDeclaration" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
-/*
+
             @Override
             public void enterFunctionExpression(JavaScriptParser.FunctionExpressionContext ctx) {
-                if (ctx.anoymousFunction() != null) {
-                    System.out.println("enterFunctionExpression: " + ctx.anoymousFunction().getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-                }
+                String code = Tree.getText(ctx);
+                System.out.println("enterFunctionExpression" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
+
             }
 
 
             @Override
             public void enterFunctionDecl(JavaScriptParser.FunctionDeclContext ctx) {
-                if (ctx.functionDeclaration() != null) {
-                    System.out.println("enterFunctionDecl: " + ctx.functionDeclaration().getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-                }
+                String code = Tree.getText(ctx);
+                System.out.println("enterFunctionDecl" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterAnoymousFunctionDecl(JavaScriptParser.AnoymousFunctionDeclContext ctx) {
-                System.out.println("enterAnoymousFunctionDecl: " + ctx.Function().getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-
+                String code = Tree.getText(ctx);
+                System.out.println("enterAnoymousFunctionDecl" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterArrowFunction(JavaScriptParser.ArrowFunctionContext ctx) {
 
-                System.out.println("enterAnoymousFunctionDecl: " + ctx.getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-
+                String code = Tree.getText(ctx);
+                System.out.println("enterArrowFunction" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterMethodDefinition(JavaScriptParser.MethodDefinitionContext ctx) {
 
-                System.out.println("enterMethodDefinition: " + ctx.getText() + "->" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
-
-            }*/
+                String code = Tree.getText(ctx);
+                System.out.println("enterMethodDefinition" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
+            }
 
         }, parser.program());
-
 
     }
 
