@@ -23,6 +23,7 @@ public class Main {
         //       StringUtils.EMPTY, src, startLine, endLine, params, header.toString());
 
         ParseTreeWalker.DEFAULT.walk(new JavaScriptParserBaseListener() {
+
             @Override
             public void enterFunctionDeclaration(JavaScriptParser.FunctionDeclarationContext ctx) {
                 String code = Tree.getText(ctx);
@@ -61,6 +62,13 @@ public class Main {
 
                 String code = Tree.getText(ctx);
                 System.out.println("enterMethodDefinition" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
+            }
+
+            @Override
+            public void enterObjectLiteral(JavaScriptParser.ObjectLiteralContext ctx) {
+
+                String code = Tree.getText(ctx);
+                System.out.println("enterObjectLiteral" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
         }, parser.program());

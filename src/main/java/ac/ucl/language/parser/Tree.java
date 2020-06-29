@@ -97,8 +97,14 @@ public final class Tree {
             functionName = "Anonymous Function";
         } else if (tree instanceof JavaScriptParser.MethodDefinitionContext) {
             while (!(tree instanceof JavaScriptParser.IdentifierContext)) {
-                if (tree.getChildCount() > 0)
+                if (tree.getChildCount() > 0) {
+                    if (tree.getChild(0) instanceof TerminalNodeImpl && tree.getChild(0).getText().equals("*")) {
+                        tree = tree.getChild(1);
+                        continue;
+                    }
                     tree = tree.getChild(0);
+                }
+
             }
             functionName = tree.getText();
         }
