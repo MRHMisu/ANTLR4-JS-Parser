@@ -66,7 +66,7 @@ public class SourceFileProcessor {
         File sourceFile = new File(sourceFilePath);
         if (sourceFile.exists()) {
             try {
-                sourceCode = FileUtils.readFileToString(sourceFile, StandardCharsets.UTF_8);
+                sourceCode = FileUtils.readFileToString(sourceFile, "UTF_8");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -108,7 +108,7 @@ public class SourceFileProcessor {
      */
     protected String[] getSourceDirectories(File rootDirectory) {
         List<String> sourceDirectories = new ArrayList<>();
-        Collection<File> files = FileUtils.listFilesAndDirs(rootDirectory,
+        Collection<File> files = FileUtils.listFiles(rootDirectory,
                 TrueFileFilter.INSTANCE,
                 TrueFileFilter.INSTANCE);
         for (File file : files) {
