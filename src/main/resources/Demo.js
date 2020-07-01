@@ -21,7 +21,7 @@ function myFunction(a, b) {
 }
 
 // (7) Function declaration in conditionals with self calling function
-(function() {
+(function () {
     'use strict';
     if (true) {
         function ok() {
@@ -37,12 +37,12 @@ function myFunction(a, b) {
 })();
 
 // (4) Function expression: starts with "const"
-const isTruthy = function(value) {
+const isTruthy = function (value) {
     return !!value;
 };
 
 // (5) Function expression: an argument for .filter()
-const numbers = ([1, false, 5]).filter(function(item) {
+const numbers = ([1, false, 5]).filter(function (item) {
     return typeof item === 'number';
 });
 
@@ -55,22 +55,24 @@ const numbers = ([1, false, 5]).filter(function(item) {
 // (7) Function declaration inside as function
 const methods = {
     numbers: [1, 5, 8],
-    sum: function() { // Function expression
-        return this.numbers.reduce(function(acc, num) { // func. expression
+    sum: function () { // Function expression
+        return this.numbers.reduce(function (acc, num) { // func. expression
             return acc + num;
         });
     }
 }
 
 
-// Anonymous function, which name is an empty string.
-(
-    function(variable) {return typeof variable; }
-).name; // => ''
+    // Anonymous function, which name is an empty string.
+    (
+        function (variable) {
+            return typeof variable;
+        }
+    ).name; // => ''
 
 
 //anonymous is assigned to a variable:
-const myFunctionVar = function(variable) {
+const myFunctionVar = function (variable) {
     return typeof variable;
 };
 
@@ -111,6 +113,7 @@ class Numbers {
     constructor(array) {
         this.array = array;
     }
+
     addNumber(number) {
         if (number !== undefined) {
             this.array.push(number);
@@ -121,6 +124,7 @@ class Numbers {
         };
     }
 }
+
 const numbersObject = new Numbers([]);
 const addMethod = numbersObject.addNumber();
 
@@ -129,7 +133,8 @@ const addMethod = numbersObject.addNumber();
 function sum1(a, b) {
     return a + b;
 }
-const sum2 = function(a, b) {
+
+const sum2 = function (a, b) {
     return a + b;
 }
 const sum3 = (a, b) => a + b;
@@ -141,14 +146,10 @@ const sumFunction = new Function(numberA, numberB,
 );
 
 
-
-
-
-
 //Generator function
-function* indexGenerator(){
+function* indexGenerator(a, b) {
     var index = 0;
-    while(true) {
+    while (true) {
         yield index++;
     }
 }
@@ -156,16 +157,16 @@ function* indexGenerator(){
 //Function expression form function* ():
 const indexGenerator = function* () {
     let index = 0;
-    while(true) {
+    while (true) {
         yield index++;
     }
 };
 
 //Shorthand method definition form *<name>():
 const obj = {
-    *indexGenerator() {
+    * indexGenerator() {
         var index = 0;
-        while(true) {
+        while (true) {
             yield index++;
         }
     }

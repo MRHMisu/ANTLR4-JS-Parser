@@ -26,13 +26,13 @@ public class Main {
 
             @Override
             public void enterFunctionDeclaration(JavaScriptParser.FunctionDeclarationContext ctx) {
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterFunctionDeclaration" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterFunctionExpression(JavaScriptParser.FunctionExpressionContext ctx) {
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterFunctionExpression" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
 
             }
@@ -40,34 +40,34 @@ public class Main {
 
             @Override
             public void enterFunctionDecl(JavaScriptParser.FunctionDeclContext ctx) {
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterFunctionDecl" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterAnoymousFunctionDecl(JavaScriptParser.AnoymousFunctionDeclContext ctx) {
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterAnoymousFunctionDecl" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterArrowFunction(JavaScriptParser.ArrowFunctionContext ctx) {
 
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterArrowFunction" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterMethodDefinition(JavaScriptParser.MethodDefinitionContext ctx) {
 
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterMethodDefinition" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
             @Override
             public void enterObjectLiteral(JavaScriptParser.ObjectLiteralContext ctx) {
 
-                String code = Tree.getText(ctx);
+                String code = Tree.getSource(ctx);
                 System.out.println("enterObjectLiteral" + "->>" + code + "->>" + ctx.getStart().getLine() + "->" + ctx.getStop().getLine());
             }
 
