@@ -1,17 +1,31 @@
-package ac.ucl.language.parser;
+package ac.ucl.parser;
 
-import ac.ucl.util.SourceFileProcessor;
 import javascript.JavaScriptParser;
 import javascript.JavaScriptParserBaseListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class Main {
 
+    private static String readFile(File file) {
+        try {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return StringUtils.EMPTY;
+        }
+    }
+
     private static void printFunctionDeclaration(String path) {
 
-        String script = SourceFileProcessor.getSourceCodeFromSourcePath(path);
+        File file = new File(path);
+        String script = readFile(file);
         JavaScriptParser parser = new Builder.Parser(script).build();
 
         // create file method

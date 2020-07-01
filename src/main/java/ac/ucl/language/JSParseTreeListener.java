@@ -1,56 +1,112 @@
-package ac.ucl.language.parser;
+package ac.ucl.language;
 
-import ac.ucl.language.model.Parameter;
 import javascript.JavaScriptParser;
+import javascript.JavaScriptParser.*;
+import javascript.JavaScriptParserBaseListener;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Tree {
-
+public class JSParseTreeListener extends JavaScriptParserBaseListener {
     static final String EMPTY_STRING = "";
     static final String FUNCTION_EXPRESSION = "Function Expression";
     static final String ARROW_FUNCTION = "Arrow Function";
     static final String ANONYMOUS_FUNCTION = "Anonymous Function";
-    static final String START = "Start";
-    static final String END = "End";
+    static final String START = "START";
+    static final String END = "END";
 
-    public static String getSource(ParseTree tree) {
-        List<TerminalNodeImpl> terminalNodes = traverseParseTree(tree);
-        String code = getFormattedSource(terminalNodes);
-        return code;
+    ParseTree parseTree;
+    List<Method> jsMethods;
+    String filePath;
+
+    public JSParseTreeListener(String filePath, ParseTree parseTree) {
+        this.parseTree = parseTree;
+        this.filePath = filePath;
+        jsMethods = new ArrayList<>();
+
     }
 
-    public static String getFormattedSource(List<TerminalNodeImpl> terminalNodes) {
+    public List<Method> getJSMethods() {
+        return this.jsMethods;
+    }
+
+    public Method getFileBlockMethod() {
+        String src = getSourceCode(this.parseTree);
+        Map<String, Integer> range = getRange(this.parseTree);
+        int startLine = range.get(START);
+        int endLine = range.get(END);
+        List<Parameter> parameters = new ArrayList<>();
+
+        return new Method(this.filePath, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
+                StringUtils.EMPTY, src, startLine, endLine, parameters, StringUtils.EMPTY);
+    }
+
+    private Method buildMethod(ParseTree tree) {
+        String className = getClassName(tree);
+        String functionName = getFunctionIdentifier(tree);
+        List<Parameter> parameters = getParameters(tree);
+        String header = getHeader(functionName, parameters);
+        Map<String, Integer> range = getRange(tree);
+        int startLine = range.get(START);
+        int endLine = range.get(END);
+        String src = getSourceCode(tree);
+        return new Method(filePath, StringUtils.EMPTY, className, functionName, StringUtils.EMPTY,
+                src, startLine, endLine, parameters, header);
+    }
+
+
+    @Override
+    public void enterFunctionDeclaration(FunctionDeclarationContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+    @Override
+    public void enterFunctionExpression(FunctionExpressionContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+    @Override
+    public void enterFunctionDecl(FunctionDeclContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+    @Override
+    public void enterAnoymousFunctionDecl(AnoymousFunctionDeclContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+    @Override
+    public void enterArrowFunction(ArrowFunctionContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+    @Override
+    public void enterMethodDefinition(MethodDefinitionContext ctx) {
+        jsMethods.add(buildMethod(ctx));
+    }
+
+
+    private static String getSourceCode(ParseTree tree) {
         StringBuilder builder = new StringBuilder();
+        List<TerminalNodeImpl> terminalNodes = traverseParseTree(tree);
         for (TerminalNodeImpl tm : terminalNodes) {
             builder.append(tm.getText() + " ");
         }
         return builder.toString();
     }
 
-    public static List<TerminalNodeImpl> traverseParseTree(ParseTree tree) {
-
-        String className = getClassName(tree);
-        String functionName = getFunctionIdentifier(tree);
-        List<Parameter> parameters = getParameters(tree);
-        String header = getHeaders(functionName, parameters);
-        Map<String, Integer> range = getRange(tree);
-
-
+    private static List<TerminalNodeImpl> traverseParseTree(ParseTree tree) {
         List<TerminalNodeImpl> terminalNodes = new ArrayList<>();
         List<ParseTree> firstStack = new ArrayList<ParseTree>();
         firstStack.add(tree);
-
         List<List<ParseTree>> childListStack = new ArrayList<List<ParseTree>>();
         childListStack.add(firstStack);
-
-
         while (!childListStack.isEmpty()) {
             List<ParseTree> childStack = childListStack.get(childListStack.size() - 1);
             if (childStack.isEmpty()) {
@@ -60,7 +116,6 @@ public final class Tree {
                 if (tree instanceof TerminalNodeImpl) {
                     terminalNodes.add((TerminalNodeImpl) tree);
                 }
-
                 if (tree.getChildCount() > 0) {
                     List<ParseTree> children = new ArrayList<ParseTree>();
                     for (int i = 0; i < tree.getChildCount(); i++) {
@@ -173,7 +228,7 @@ public final class Tree {
         return functionName;
     }
 
-    private static String getHeaders(String functionName, List<Parameter> parameters) {
+    private static String getHeader(String functionName, List<Parameter> parameters) {
         StringBuilder sb = new StringBuilder();
         sb.append(functionName + " " + "(");
         for (Parameter p : parameters) {
@@ -196,4 +251,5 @@ public final class Tree {
         }
         return range;
     }
+
 }

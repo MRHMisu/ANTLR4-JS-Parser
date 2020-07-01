@@ -1,6 +1,6 @@
 package ac.ucl;
 
-import ac.ucl.language.model.Method;
+import ac.ucl.language.Method;
 
 import java.util.ArrayList;
 

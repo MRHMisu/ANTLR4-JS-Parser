@@ -1,4 +1,4 @@
-package ac.ucl.language.model;
+package ac.ucl.language;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ac.ucl.language.model;
+package ac.ucl.language;
 
 public class Parameter {
     private String type;

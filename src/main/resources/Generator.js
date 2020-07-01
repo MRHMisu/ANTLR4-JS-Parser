@@ -41,5 +41,3 @@ function sum(a, b) {
 const isTruthy = function (value) {
     return !!value;
 };
-
-

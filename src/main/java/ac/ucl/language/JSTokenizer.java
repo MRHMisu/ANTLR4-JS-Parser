@@ -1,4 +1,4 @@
-package ac.ucl.javascript;
+package ac.ucl.language;
 
 import ac.ucl.Normalizer;
 import ac.ucl.Tokenizer;
