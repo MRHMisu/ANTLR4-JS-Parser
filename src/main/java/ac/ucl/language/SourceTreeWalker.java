@@ -42,7 +42,7 @@ public final class SourceTreeWalker {
 
     public static void main(String[] args) throws Exception {
 
-        String jsFileName = "Generator.js";
+        String jsFileName = "Demo.js";
         File file = new File(SourceTreeWalker.class.getClassLoader().getResource(jsFileName).getFile());
         String sourceCode = readFile(file);
         printFunctionDeclaration(file, sourceCode);

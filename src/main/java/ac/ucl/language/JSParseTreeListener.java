@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class JSParseTreeListener extends JavaScriptParserBaseListener {
-    static final String EMPTY_STRING = "";
+
     static final String FUNCTION_EXPRESSION = "Function Expression";
     static final String ARROW_FUNCTION = "Arrow Function";
     static final String ANONYMOUS_FUNCTION = "Anonymous Function";
@@ -137,7 +137,7 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
                     for (int j = 0; j < parameter_list.getChildCount(); j++) {
                         if (parameter_list.getChild(j) instanceof JavaScriptParser.FormalParameterArgContext) {
                             String param = parameter_list.getChild(j).getText();
-                            parameters.add(new Parameter(EMPTY_STRING, param));
+                            parameters.add(new Parameter(StringUtils.EMPTY, param));
                         }
                     }
                     break;
@@ -159,7 +159,7 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
                             for (int j = 0; j < secondChild.getChildCount(); j++) {
                                 if (secondChild.getChild(j) instanceof JavaScriptParser.FormalParameterArgContext) {
                                     String param = secondChild.getChild(j).getText();
-                                    parameters.add(new Parameter(EMPTY_STRING, param));
+                                    parameters.add(new Parameter(StringUtils.EMPTY, param));
                                 }
                             }
                             break;
@@ -183,7 +183,7 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
     }
 
     private static String getClassName(ParseTree tree) {
-        String className = EMPTY_STRING;
+        String className = StringUtils.EMPTY;
         if (tree instanceof JavaScriptParser.MethodDefinitionContext) {
             ParseTree parentClassContext = tree.getParent();
             while (!(parentClassContext instanceof JavaScriptParser.ClassDeclarationContext)) {
@@ -196,7 +196,7 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
     }
 
     private static String getFunctionIdentifier(ParseTree tree) {
-        String functionName = EMPTY_STRING;
+        String functionName = StringUtils.EMPTY;
         if (tree instanceof JavaScriptParser.FunctionDeclarationContext) {
             if (tree.getChildCount() > 0) {
                 for (int i = 0; i < tree.getChildCount(); i++) {
