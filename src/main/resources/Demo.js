@@ -1,40 +1,16 @@
-module.exports.getJSFilesWithContent = getAllJsFilesWithContent;
-module.exports.walk = findJSFiles;
+async function f(){}
 
-var filesystem = require('fs');
-var path = require('path');
-var util = require('./../util/util');
-var model = require('./../model/sourceFile');
-
-function getAllJsFilesWithContent(basePathOfTheApplication) {
-    var jsFileList = findJSFiles(basePathOfTheApplication);
-    var jsFileContent = readFiles(jsFileList);
-    return jsFileContent;
+class C {
+    async method(){}
+    static async method1(){}
+    async static #method2(){}
+    async *gen(){}
+    async get v(){return 1};
 }
+async ()=>{};
 
-function findJSFiles(dir) {
-    var results = [];
-    var list = filesystem.readdirSync(dir)
-    list.forEach(function (file) {
-        file = dir + '/' + file;
-        var stat = filesystem.statSync(file);
-        if (stat && stat.isDirectory()) results = results.concat(findJSFiles(file))
-        else if (path.extname(file) === ".js") {
-            var name = path.basename(file);
-            results.push(new model.SourceFile(util.getUUID(), name, file));
-        }
-    });
-    return results;
-}
+async ()=>{await f();}
+async ()=>{await promise;}
+async ()=>{await 1;}
 
-
-function readFiles(fileList) {
-    var fileWithContent = [];
-    fileList.forEach(function (element) {
-        var data = filesystem.readFileSync(element.filePath);
-        element.setContent(data.toString());
-        fileWithContent.push(element);
-    });
-    return fileWithContent;
-}
-
+async function* gen(){}
