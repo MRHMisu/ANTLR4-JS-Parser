@@ -25,6 +25,7 @@ public final class SourceTreeWalker {
             methods.addAll(jsParseTreeListener.getJSMethods());
         } catch (Exception e) {
             System.err.println("Source file->" + sourceFile.getPath() + "-cannot be parsed ");
+            System.out.println(e.getMessage());
         }
         System.out.println("---Completed---");
 
@@ -43,6 +44,7 @@ public final class SourceTreeWalker {
     public static void main(String[] args) throws Exception {
 
         String jsFileName = "Demo.js";
+        //String jsFileName = "All-Combination-Of-JS-Functions.js";
         File file = new File(SourceTreeWalker.class.getClassLoader().getResource(jsFileName).getFile());
         String sourceCode = readFile(file);
         printFunctionDeclaration(file, sourceCode);

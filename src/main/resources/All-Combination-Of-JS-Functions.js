@@ -179,7 +179,7 @@ class Car {
     async static #asyncStaticClassMethod() {
     }
 
-    // (30) async generaotr class member method
+    // (30) async generator class member method
     async* gen() {
     }
 }

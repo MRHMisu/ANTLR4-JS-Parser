@@ -16,19 +16,21 @@ import java.util.Map;
 public class JSParseTreeListener extends JavaScriptParserBaseListener {
 
     static final String FUNCTION_EXPRESSION = "Function Expression";
-    static final String ARROW_FUNCTION = "Arrow Function";
-    static final String ANONYMOUS_FUNCTION = "Anonymous Function";
     static final String START = "START";
     static final String END = "END";
 
     ParseTree parseTree;
     List<Method> jsMethods;
     String filePath;
+    static Map<Integer, Integer> sourceStartEndMap;
+    static Map<Integer, String> sourceCodeMap;
 
     public JSParseTreeListener(String filePath, ParseTree parseTree) {
         this.parseTree = parseTree;
         this.filePath = filePath;
         jsMethods = new ArrayList<>();
+        sourceStartEndMap = new HashMap<>();
+        sourceCodeMap = new HashMap<>();
 
     }
 
@@ -47,48 +49,44 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
                 StringUtils.EMPTY, src, startLine, endLine, parameters, StringUtils.EMPTY);
     }
 
-    private Method buildMethod(ParseTree tree) {
-        String className = getClassName(tree);
-        String functionName = getFunctionIdentifier(tree);
-        List<Parameter> parameters = getParameters(tree);
-        String header = getHeader(functionName, parameters);
+    private void buildMethod(ParseTree tree) {
         Map<String, Integer> range = getRange(tree);
         int startLine = range.get(START);
         int endLine = range.get(END);
         String src = getSourceCode(tree);
-        return new Method(filePath, StringUtils.EMPTY, className, functionName, StringUtils.EMPTY,
+        if ((sourceStartEndMap.containsKey(startLine) && sourceStartEndMap.get(startLine).equals(endLine))) {
+            if (sourceCodeMap.get(startLine).equals(src)) {
+                System.out.println("Found duplicate");
+                return;
+            }
+        }
+        String className = getClassName(tree);
+        String functionName = getFunctionIdentifier(tree);
+        List<Parameter> parameters = getParameters(tree);
+        String header = getHeader(functionName, parameters);
+        this.sourceStartEndMap.put(startLine, endLine);
+        this.sourceCodeMap.put(startLine, src);
+
+        Method method = new Method(filePath, StringUtils.EMPTY, className, functionName, StringUtils.EMPTY,
                 src, startLine, endLine, parameters, header);
+        jsMethods.add(method);
+
     }
 
 
     @Override
     public void enterFunctionDeclaration(FunctionDeclarationContext ctx) {
-        jsMethods.add(buildMethod(ctx));
+        buildMethod(ctx);
     }
 
     @Override
     public void enterFunctionExpression(FunctionExpressionContext ctx) {
-        jsMethods.add(buildMethod(ctx));
-    }
-
-    @Override
-    public void enterFunctionDecl(FunctionDeclContext ctx) {
-        jsMethods.add(buildMethod(ctx));
-    }
-
-    @Override
-    public void enterAnoymousFunctionDecl(AnoymousFunctionDeclContext ctx) {
-        jsMethods.add(buildMethod(ctx));
-    }
-
-    @Override
-    public void enterArrowFunction(ArrowFunctionContext ctx) {
-        jsMethods.add(buildMethod(ctx));
+        buildMethod(ctx);
     }
 
     @Override
     public void enterMethodDefinition(MethodDefinitionContext ctx) {
-        jsMethods.add(buildMethod(ctx));
+        buildMethod(ctx);
     }
 
 
@@ -128,7 +126,8 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
         return terminalNodes;
     }
 
-    private static List<Parameter> getFunctionDeclarationParameters(ParseTree tree) {
+
+    private static List<Parameter> getParameters(ParseTree tree) {
         List<Parameter> parameters = new ArrayList<>();
         if (tree.getChildCount() > 0) {
             for (int i = 0; i < tree.getChildCount(); i++) {
@@ -147,40 +146,6 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
         return parameters;
     }
 
-    private static List<Parameter> getArrowFunctionParameters(ParseTree tree) {
-        List<Parameter> parameters = new ArrayList<>();
-        if (tree.getChildCount() > 0) {
-            ParseTree firstChild = tree.getChild(0);//ArrowFunctionParametersContext
-            if (firstChild.getChildCount() > 0) {
-                for (int i = 0; i < firstChild.getChildCount(); i++) {
-                    if (firstChild.getChild(i) instanceof JavaScriptParser.FormalParameterListContext) {
-                        ParseTree secondChild = firstChild.getChild(i);
-                        if (secondChild.getChildCount() > 0) {
-                            for (int j = 0; j < secondChild.getChildCount(); j++) {
-                                if (secondChild.getChild(j) instanceof JavaScriptParser.FormalParameterArgContext) {
-                                    String param = secondChild.getChild(j).getText();
-                                    parameters.add(new Parameter(StringUtils.EMPTY, param));
-                                }
-                            }
-                            break;
-                        }
-
-                    }
-                }
-            }
-        }
-        return parameters;
-    }
-
-    private static List<Parameter> getParameters(ParseTree tree) {
-        List<Parameter> parameters = new ArrayList<>();
-        if (tree instanceof JavaScriptParser.AnoymousFunctionContext) {
-            parameters.addAll(getArrowFunctionParameters(tree));
-        } else {
-            parameters.addAll(getFunctionDeclarationParameters(tree));
-        }
-        return parameters;
-    }
 
     private static String getClassName(ParseTree tree) {
         String className = StringUtils.EMPTY;
@@ -209,14 +174,14 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
             }
         } else if (tree instanceof JavaScriptParser.FunctionExpressionContext) {
             functionName = FUNCTION_EXPRESSION;//Functional expression does not contain any identifier
-        } else if (tree instanceof JavaScriptParser.ArrowFunctionContext) {
-            functionName = ARROW_FUNCTION;//Arrow function does not contain any identifier
-        } else if (tree instanceof JavaScriptParser.AnoymousFunctionContext) {
-            functionName = ANONYMOUS_FUNCTION;// Anonymous Function does not contain any identifier
         } else if (tree instanceof JavaScriptParser.MethodDefinitionContext) {// profess class member method
             while (!(tree instanceof JavaScriptParser.IdentifierContext)) {
                 if (tree.getChildCount() > 0) {// check even a member method is a generator function
                     if (tree.getChild(0) instanceof TerminalNodeImpl && tree.getChild(0).getText().equals("*")) {
+                        tree = tree.getChild(1);
+                        continue;
+                    }// check even a member method starts with #
+                    if (tree.getChild(0) instanceof TerminalNodeImpl && tree.getChild(0).getText().equals("#")) {
                         tree = tree.getChild(1);
                         continue;
                     }
@@ -240,7 +205,7 @@ public class JSParseTreeListener extends JavaScriptParserBaseListener {
         return sb.toString();
     }
 
-    private static Map<String, Integer> getRange(ParseTree tree) {
+    private Map<String, Integer> getRange(ParseTree tree) {
         Map<String, Integer> range = new HashMap<>();
         range.put(START, 0);
         range.put(END, 0);
